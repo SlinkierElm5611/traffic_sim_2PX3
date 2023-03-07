@@ -1,4 +1,6 @@
-from matplotlib import pyplot as plt
+from matplotlib import pyplot
+from random import random
+from typing import Dict, List
 
 LEFT_TURNING_LANE: str = "left"
 RIGHT_TURNING_LANE: str = "right"
@@ -37,7 +39,16 @@ intersection_design: dict = {
     ]
 }
 
-def simulation(intersection: dict, load: int) -> float:
+def get_severity_of_incident() -> int:
+    severity: float = random()
+    if severity <= 0.5:
+        return 1
+    elif severity <=0.85:
+        return 2
+    else:
+        return 3
+
+def simulation(intersection: Dict[str, List[Dict[str,List[str]]]], load: int) -> float:
     '''
     simulation code that will return the average wait time given an intersection and a load
     where we define load as the backlog of cars that are waiting to start driving (in each lane)
@@ -96,11 +107,23 @@ def main():
     '''
     average_wait_time: list[float] = []
     related_loads: list[int] = []
-    for i in range (5, 200, 5):
-        average_wait_time.append(simulation(intersection=intersection_design, load=i))
+    for i in range (5, 200, 1):
+        average_wait_time.append(simulation(intersection=intersection_design, load=i)+(i*random()/10))
         related_loads.append(i)
-    plt.plot(related_loads, average_wait_time)
-    plt.show()
+    fig, axs = pyplot.subplots(2,1)
+    axs[0].plot(related_loads, average_wait_time)
+    number_of_incidents: List[int] = []
+    proportions: List[int] = []
+    for i in range(0, 101, 1):
+        proportions.append(i)
+        incidents: int = 0
+        for j in range(0,i):
+            if random() > 0.98:
+                incidents = incidents + 1
+        number_of_incidents.append(incidents)
+        pass
+    axs[1].plot(proportions, number_of_incidents)
+    pyplot.show()
 
 if __name__ == "__main__":
     main()
